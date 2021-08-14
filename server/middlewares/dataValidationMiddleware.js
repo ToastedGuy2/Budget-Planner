@@ -1,49 +1,42 @@
 const Validator = require("validatorjs");
 const { isEmailInUse } = require("../helpers/userHelper");
-exports.validateUser = async (req, res, next) => {
-  try {
-    const user = req.body;
-    const rules = {
-      email: "required|email",
-      password: "required",
-      repeat_password: "required|same:password",
-    };
-    const validation = new Validator(user, rules, {
-      required: "This field is required",
-      same: "Passwords do not match",
-    });
-    if (validation.fails()) {
-      const errors = {
-        email: validation.errors.has("email")
-          ? validation.errors.first("email")
-          : undefined,
-        password: validation.errors.has("password")
-          ? validation.errors.first("password")
-          : undefined,
-        repeat_password: validation.errors.has("repeat_password")
-          ? validation.errors.first("repeat_password")
-          : undefined,
-      };
-      return res.status(400).json({
-        status: "failed",
-        message: "invalid data",
-        errors,
+exports.validateUser = (req, res, next) => {
+  const user = req.body;
+  Validator.registerAsync(
+    "email_available",
+    (email, attribute, req, passes) => {
+      isEmailInUse(email).then((result) => {
+        result ? passes(false, "Email has already been taken") : passes();
       });
     }
-    if (await isEmailInUse(req.body.email)) {
-      return res.status(400).json({
-        status: "failed",
-        message: "invalid email",
-        errors: {
-          email: "Email is already in use.",
-        },
-      });
-    }
+  );
+  let rules = {
+    email: "required|email|email_available",
+    password: "required",
+    repeat_password: "required|same:password",
+  };
+  let validation = new Validator(user, rules, {
+    same: "Passwords do not match",
+    required: "This field is required",
+  });
+  const passes = () => {
     next();
-  } catch (error) {
-    return res.status(500).json({
+  };
+  const fails = () => {
+    const getAttributeError = (propertyName) =>
+      validation.errors.first(propertyName)
+        ? validation.errors.first(propertyName)
+        : undefined;
+    const errors = {
+      email: getAttributeError("email"),
+      password: getAttributeError("password"),
+      repeat_password: getAttributeError("repeat_password"),
+    };
+    res.status(400).json({
       status: "failed",
-      message: "Oops something went wrong...",
+      message: "invalid data",
+      errors,
     });
-  }
+  };
+  validation.checkAsync(passes, fails);
 };

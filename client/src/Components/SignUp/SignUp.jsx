@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import TextField from "@material-ui/core/TextField";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
@@ -9,27 +10,80 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import CenterContainer from "../CenterContainer";
+import Alert from "@material-ui/lab/Alert";
+import Collapse from "@material-ui/core/Collapse";
 import useStyles from "./style.js";
 import * as Validator from "validatorjs";
-export default function SignUp() {
+import axios from "axios";
+import { userApiUrl } from "../../apiUrls.js";
+import { Redirect } from "react-router-dom";
+export default function SignUp({ login }) {
   const [user, setUser] = useState({
-    email: "",
-    password: "",
-    repeat_password: "",
+    email: "bar2@bar2.com",
+    password: "bar2",
+    repeat_password: "bar2",
   });
-  const [emailError, setEmailError] = useState({
-    error: false,
-    helperText: "",
+  const [inputError, setInputErrors] = useState({
+    email: {
+      error: false,
+      helperText: "",
+    },
+    password: {
+      error: false,
+      helperText: "",
+    },
+    repeat_password: {
+      error: false,
+      helperText: "",
+    },
   });
-  const [passwordError, setPasswordError] = useState({
-    error: false,
-    helperText: "",
-  });
-  const [repeatPasswordError, setRepeatPasswordError] = useState({
-    error: false,
-    helperText: "",
-  });
-  // TODO: The password confirmation field is required.
+  const [alertError, setAlertError] = useState({ display: false, message: "" });
+  const [loading, setLoading] = useState(false);
+  const [complete, setComplete] = useState(false);
+  useEffect(() => {
+    if (loading) {
+      const authNewUser = async () => {
+        try {
+          await axios.get(`${userApiUrl}/${user.email}`);
+          setInputErrors({
+            ...inputError,
+            email: { error: true, helperText: "Email has already been taken" },
+          });
+          setLoading(false);
+        } catch (error) {
+          const { status, data } = error.response;
+          if (error.response) {
+            if (status === 404) {
+              try {
+                const { data } = await axios.post(userApiUrl, user);
+                data.password = user.password;
+                await login(data);
+                setLoading(false);
+                setComplete(true);
+              } catch (error) {
+                const { status, data } = error.response;
+                if (error.response) {
+                  setAlertError(data.message);
+                }
+              }
+            }
+            if (status === 500) {
+              setAlertError(data.message);
+            }
+          } else {
+            displayAlertError(
+              "Something went wrong while processing your request. Please try again"
+            );
+          }
+        }
+      };
+      authNewUser();
+    }
+  }, [loading]);
+  const displayAlertError = (message) => {
+    setAlertError({ display: true, message });
+    setLoading(false);
+  };
   const onSubmitHandler = (e) => {
     e.preventDefault();
     let rules = {
@@ -41,51 +95,57 @@ export default function SignUp() {
       same: "Passwords do not match",
       required: "This field is required",
     });
-    if (validation.fails()) {
+    setInputErrors({
+      email: {
+        error: false,
+        helperText: "",
+      },
+      password: {
+        error: false,
+        helperText: "",
+      },
+      repeat_password: {
+        error: false,
+        helperText: "",
+      },
+    });
+    if (validation.passes()) {
+      setLoading(true);
+    } else {
+      // Synchronous validation fails
       if (validation.errors.has("email")) {
-        setEmailError({
-          error: true,
-          helperText: validation.errors.first("email"),
-        });
-      } else {
-        setEmailError({
-          error: false,
-          helperText: "",
-        });
+        setInputErrors((currentState) => ({
+          ...currentState,
+          email: {
+            error: true,
+            helperText: validation.errors.first("email"),
+          },
+        }));
       }
       if (validation.errors.has("password")) {
-        setPasswordError({
-          error: true,
-          helperText: validation.errors.first("password"),
-        });
-      } else {
-        setPasswordError({
-          error: false,
-          helperText: "",
-        });
+        setInputErrors((currentState) => ({
+          ...currentState,
+          password: {
+            error: true,
+            helperText: validation.errors.first("password"),
+          },
+        }));
       }
       if (validation.errors.has("repeat_password")) {
-        setRepeatPasswordError({
-          error: true,
-          helperText: validation.errors.first("repeat_password"),
-        });
-      } else {
-        setRepeatPasswordError({
-          error: false,
-          helperText: "",
-        });
+        setInputErrors((currentState) => ({
+          ...currentState,
+          repeat_password: {
+            error: true,
+            helperText: validation.errors.first("repeat_password"),
+          },
+        }));
       }
-    } else {
-      setEmailError({ ...emailError, error: false });
-      setPasswordError({ ...passwordError, error: false });
-      setRepeatPasswordError({
-        ...repeatPasswordError,
-        error: false,
-      });
-      alert("Everything is alright");
     }
   };
   const classes = useStyles();
+  if (complete) {
+    return <Redirect to="/" />;
+  }
   return (
     <CenterContainer>
       <Container component="main" maxWidth="xs">
@@ -98,112 +158,84 @@ export default function SignUp() {
           </Typography>
         </Box>
         <form noValidate onSubmit={onSubmitHandler}>
-          {emailError.error ? (
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              margin="normal"
-              value={user.email}
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
-              autoFocus
-              error
-              helperText={emailError.helperText}
-            />
-          ) : (
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              margin="normal"
-              value={user.email}
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
-              autoFocus
-            />
-          )}
-          {passwordError.error ? (
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              margin="normal"
-              value={user.password}
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
-              error
-              helperText={passwordError.helperText}
-            />
-          ) : (
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              margin="normal"
-              value={user.password}
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
-            />
-          )}
-          {repeatPasswordError.error ? (
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              name="repeat_password"
-              label="Repeat password"
-              type="password"
-              id="repeat_password"
-              autoComplete="repeat_password"
-              margin="normal"
-              value={user.repeat_password}
-              onChange={(e) =>
-                setUser({ ...user, repeat_password: e.target.value })
-              }
-              error
-              helperText={repeatPasswordError.helperText}
-            />
-          ) : (
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              name="repeat_password"
-              label="Repeat password"
-              type="password"
-              id="repeat_password"
-              autoComplete="repeat_password"
-              margin="normal"
-              value={user.repeat_password}
-              onChange={(e) =>
-                setUser({ ...user, repeat_password: e.target.value })
-              }
-            />
-          )}
-          <Button
-            type="submit"
+          <Collapse in={alertError.display}>
+            <Alert
+              variant="filled"
+              severity="error"
+              onClose={() => {
+                setAlertError(false);
+              }}
+            >
+              {alertError.message}
+            </Alert>
+          </Collapse>
+          <TextField
+            variant="outlined"
+            required
             fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submitBtn}
-          >
-            Sign Up
-          </Button>
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            margin="normal"
+            value={user.email}
+            onChange={(e) => setUser({ ...user, email: e.target.value })}
+            autoFocus
+            error={inputError.email.error}
+            helperText={inputError.email.helperText}
+          />
+          <TextField
+            variant="outlined"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            margin="normal"
+            value={user.password}
+            onChange={(e) => setUser({ ...user, password: e.target.value })}
+            error={inputError.password.error}
+            helperText={inputError.password.helperText}
+          />
+          <TextField
+            variant="outlined"
+            required
+            fullWidth
+            name="repeat_password"
+            label="Repeat password"
+            type="password"
+            id="repeat_password"
+            autoComplete="repeat_password"
+            margin="normal"
+            value={user.repeat_password}
+            onChange={(e) =>
+              setUser({ ...user, repeat_password: e.target.value })
+            }
+            error={inputError.repeat_password.error}
+            helperText={inputError.repeat_password.helperText}
+          />
+
+          <div className={classes.wrapper}>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submitBtn}
+              disabled={loading}
+            >
+              Sign up
+            </Button>
+            {loading && (
+              <CircularProgress
+                size={24}
+                color="primary"
+                className={classes.progressClass}
+              />
+            )}
+          </div>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="#" variant="body2">
@@ -212,23 +244,7 @@ export default function SignUp() {
             </Grid>
           </Grid>
         </form>
-
-        {/* <Box mt={5}>
-          <Copyright />
-        </Box> */}
       </Container>
     </CenterContainer>
   );
 }
-// function Copyright() {
-//   return (
-//     <Typography variant="body2" color="textSecondary" align="center">
-//       {"Copyright © "}
-//       <Link color="inherit" href="https://material-ui.com/">
-//         Your Website
-//       </Link>{" "}
-//       {new Date().getFullYear()}
-//       {"."}
-//     </Typography>
-//   );
-// }
