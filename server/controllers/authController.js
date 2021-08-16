@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
+const { morphism } = require("morphism");
 const jwt = require("jsonwebtoken");
 const UserModel = require("../models/UserModels");
+const schema = require("../morphismSchemas/UserSchema");
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -30,7 +32,14 @@ exports.login = async (req, res) => {
         res.cookie("token", jwt, {
           maxAge: daysToExpire * 24 * 60 * 60 * 1000,
         });
-        return res.json(jwt);
+        return res.json({
+          status: "success",
+          message: "user logged successfully",
+          data: {
+            jwt,
+            user: morphism(schema, user),
+          },
+        });
       }
     );
   } catch (error) {
