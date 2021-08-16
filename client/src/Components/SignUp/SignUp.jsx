@@ -16,68 +16,24 @@ import useStyles from "./style.js";
 import * as Validator from "validatorjs";
 import axios from "axios";
 import { userApiUrl } from "../../apiUrls.js";
+import emailStatus from "./emailStatus";
 import { Redirect } from "react-router-dom";
+const defaultInput = {
+  value: "",
+  error: {
+    display: false,
+    message: "",
+  },
+};
 export default function SignUp({ login }) {
-  const [user, setUser] = useState({
-    email: "bar2@bar2.com",
-    password: "bar2",
-    repeat_password: "bar2",
-  });
-  const [inputError, setInputErrors] = useState({
-    email: {
-      error: false,
-      helperText: "",
-    },
-    password: {
-      error: false,
-      helperText: "",
-    },
-    repeat_password: {
-      error: false,
-      helperText: "",
-    },
-  });
+  const [emailInput, setEmailInput] = useState(defaultInput);
+  const [passwordInput, setPasswordInput] = useState(defaultInput);
+  const [repeatPasswordInput, setRepeatPasswordInput] = useState(defaultInput);
   const [alertError, setAlertError] = useState({ display: false, message: "" });
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
   useEffect(() => {
     if (loading) {
-      const authNewUser = async () => {
-        try {
-          await axios.get(`${userApiUrl}/${user.email}`);
-          setInputErrors({
-            ...inputError,
-            email: { error: true, helperText: "Email has already been taken" },
-          });
-          setLoading(false);
-        } catch (error) {
-          const { status, data } = error.response;
-          if (error.response) {
-            if (status === 404) {
-              try {
-                const { data } = await axios.post(userApiUrl, user);
-                data.password = user.password;
-                await login(data);
-                setLoading(false);
-                setComplete(true);
-              } catch (error) {
-                const { status, data } = error.response;
-                if (error.response) {
-                  setAlertError(data.message);
-                }
-              }
-            }
-            if (status === 500) {
-              setAlertError(data.message);
-            }
-          } else {
-            displayAlertError(
-              "Something went wrong while processing your request. Please try again"
-            );
-          }
-        }
-      };
-      authNewUser();
     }
   }, [loading]);
   const displayAlertError = (message) => {
@@ -86,61 +42,64 @@ export default function SignUp({ login }) {
   };
   const onSubmitHandler = (e) => {
     e.preventDefault();
-    let rules = {
-      email: "required|email",
-      password: "required",
-      repeat_password: "required|same:password",
+    const applySyncValidation = () => {
+      const inputs = {
+        email: emailInput.value,
+        password: passwordInput.value,
+        repeat_password: repeatPasswordInput.value,
+      };
+      let rules = {
+        email: "required|email",
+        password: "required",
+        repeat_password: "required|same:password",
+      };
+      let validation = new Validator(inputs, rules, {
+        same: "Passwords do not match",
+        required: "This field is required",
+      });
+      const clearInputErrors = () => {
+        const error = {
+          display: false,
+          message: "",
+        };
+        setEmailInput({ value: emailInput.value, error });
+        setPasswordInput({ value: passwordInput.value, error });
+        setRepeatPasswordInput({ value: repeatPasswordInput.value, error });
+      };
+      clearInputErrors();
+      if (validation.passes()) {
+        setLoading(true);
+      } else {
+        if (validation.errors.has("email")) {
+          setEmailInput({
+            value: emailInput.value,
+            error: {
+              display: true,
+              message: validation.errors.get("email"),
+            },
+          });
+        }
+        if (validation.errors.has("password")) {
+          setPasswordInput({
+            value: passwordInput.value,
+            error: {
+              display: true,
+              message: validation.errors.get("password"),
+            },
+          });
+        }
+        if (validation.errors.has("repeat_password")) {
+          setRepeatPasswordInput({
+            value: repeatPasswordInput.value,
+            error: {
+              display: true,
+              message: validation.errors.get("repeat_password"),
+            },
+          });
+        }
+      }
     };
-    let validation = new Validator(user, rules, {
-      same: "Passwords do not match",
-      required: "This field is required",
-    });
-    setInputErrors({
-      email: {
-        error: false,
-        helperText: "",
-      },
-      password: {
-        error: false,
-        helperText: "",
-      },
-      repeat_password: {
-        error: false,
-        helperText: "",
-      },
-    });
-    if (validation.passes()) {
-      setLoading(true);
-    } else {
-      // Synchronous validation fails
-      if (validation.errors.has("email")) {
-        setInputErrors((currentState) => ({
-          ...currentState,
-          email: {
-            error: true,
-            helperText: validation.errors.first("email"),
-          },
-        }));
-      }
-      if (validation.errors.has("password")) {
-        setInputErrors((currentState) => ({
-          ...currentState,
-          password: {
-            error: true,
-            helperText: validation.errors.first("password"),
-          },
-        }));
-      }
-      if (validation.errors.has("repeat_password")) {
-        setInputErrors((currentState) => ({
-          ...currentState,
-          repeat_password: {
-            error: true,
-            helperText: validation.errors.first("repeat_password"),
-          },
-        }));
-      }
-    }
+    applySyncValidation();
   };
   const classes = useStyles();
   if (complete) {
@@ -178,11 +137,13 @@ export default function SignUp({ login }) {
             name="email"
             autoComplete="email"
             margin="normal"
-            value={user.email}
-            onChange={(e) => setUser({ ...user, email: e.target.value })}
+            value={emailInput.value}
+            onChange={(e) => {
+              setEmailInput({ ...emailInput, value: e.target.value });
+            }}
             autoFocus
-            error={inputError.email.error}
-            helperText={inputError.email.helperText}
+            error={emailInput.error.display}
+            helperText={emailInput.error.message}
           />
           <TextField
             variant="outlined"
@@ -194,10 +155,12 @@ export default function SignUp({ login }) {
             id="password"
             autoComplete="current-password"
             margin="normal"
-            value={user.password}
-            onChange={(e) => setUser({ ...user, password: e.target.value })}
-            error={inputError.password.error}
-            helperText={inputError.password.helperText}
+            value={passwordInput.value}
+            onChange={(e) => {
+              setPasswordInput({ ...passwordInput, value: e.target.value });
+            }}
+            error={passwordInput.error.display}
+            helperText={passwordInput.error.message}
           />
           <TextField
             variant="outlined"
@@ -209,12 +172,15 @@ export default function SignUp({ login }) {
             id="repeat_password"
             autoComplete="repeat_password"
             margin="normal"
-            value={user.repeat_password}
-            onChange={(e) =>
-              setUser({ ...user, repeat_password: e.target.value })
-            }
-            error={inputError.repeat_password.error}
-            helperText={inputError.repeat_password.helperText}
+            value={repeatPasswordInput.value}
+            onChange={(e) => {
+              setRepeatPasswordInput({
+                ...repeatPasswordInput,
+                value: e.target.value,
+              });
+            }}
+            error={repeatPasswordInput.error.display}
+            helperText={repeatPasswordInput.error.message}
           />
 
           <div className={classes.wrapper}>
