@@ -151,15 +151,15 @@ export default function SignUp({ login }) {
   return (
     <CenterContainer>
       <Container component="main" maxWidth="xs">
-        <Box className={classes.box}>
-          <Avatar className={classes.avatar}>
-            <PersonAddIcon fontSize="large" />
-          </Avatar>
-          <Typography component="h1" variant="h4">
-            Sign up
-          </Typography>
-        </Box>
-        <form noValidate onSubmit={onSubmitHandler}>
+        <form noValidate onSubmit={onSubmitHandler} className={classes.form}>
+          <Box className={classes.box}>
+            <Avatar className={classes.avatar}>
+              <PersonAddIcon fontSize="large" />
+            </Avatar>
+            <Typography component="h1" variant="h4">
+              Sign up
+            </Typography>
+          </Box>
           <Collapse in={alertError.display}>
             <Alert
               variant="filled"
@@ -247,7 +247,12 @@ export default function SignUp({ login }) {
           </div>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link component={RouterLink} to="/login" variant="body2">
+              <Link
+                component={RouterLink}
+                to="/login"
+                variant="body2"
+                color="primary"
+              >
                 Already have an account? Login here
               </Link>
             </Grid>

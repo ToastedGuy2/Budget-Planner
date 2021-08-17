@@ -5,11 +5,18 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
   },
+  form: {
+    padding: theme.spacing(4, 3),
+    borderRadius: theme.spacing(1),
+    boxShadow:
+      "rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px",
+    backgroundColor: "white",
+  },
   avatar: {
     height: theme.spacing(8),
     width: theme.spacing(8),
     marginBottom: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
   },
   submitBtn: {
     margin: theme.spacing(2, 0),

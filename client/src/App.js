@@ -5,8 +5,9 @@ import axios from "axios";
 import Main from "./Components/Main/Main.jsx";
 import SignUp from "./Components/SignUp/SignUp.jsx";
 import Login from "./Components/Login/Login.jsx";
+import CssBaseline from "@material-ui/core/CssBaseline";
 export default function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({ email: "toastedguy2@protonmail.com" });
   const login = async (credentials) => {
     const response = await axios.post(authApiUrl, credentials);
     const { jwt, user } = response.data;
@@ -15,6 +16,7 @@ export default function App() {
 
   return (
     <Router>
+      <CssBaseline />
       <Switch>
         <Route exact path="/">
           <Main user={user} />

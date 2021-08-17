@@ -15,8 +15,6 @@ import Alert from "@material-ui/lab/Alert";
 import Collapse from "@material-ui/core/Collapse";
 import useStyles from "./style.js";
 import * as Validator from "validatorjs";
-import axios from "axios";
-import { userApiUrl } from "../../apiUrls.js";
 import { Redirect } from "react-router-dom";
 const defaultInput = {
   value: "",
@@ -40,7 +38,6 @@ export default function Login({ login }) {
             password: passwordInput.value,
           };
           await login(user);
-          setLoading(false);
           setComplete(true);
         } catch (error) {
           if (error.response) {
@@ -54,6 +51,8 @@ export default function Login({ login }) {
             displayAlertError(
               "Oops our app crash while processing your request....Please try again"
             );
+        } finally {
+          setLoading(false);
         }
       };
       authUSer();
@@ -117,15 +116,15 @@ export default function Login({ login }) {
   return (
     <CenterContainer>
       <Container component="main" maxWidth="xs">
-        <Box className={classes.box}>
-          <Avatar className={classes.avatar}>
-            <PersonIcon fontSize="large" />
-          </Avatar>
-          <Typography component="h1" variant="h4">
-            Login
-          </Typography>
-        </Box>
-        <form noValidate onSubmit={onSubmitHandler}>
+        <form noValidate onSubmit={onSubmitHandler} className={classes.form}>
+          <Box className={classes.box}>
+            <Avatar className={classes.avatar}>
+              <PersonIcon fontSize="large" />
+            </Avatar>
+            <Typography component="h1" variant="h4">
+              Login
+            </Typography>
+          </Box>
           <Collapse in={alertError.display}>
             <Alert
               variant="filled"
@@ -193,7 +192,12 @@ export default function Login({ login }) {
           </div>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link component={RouterLink} to="/signup" variant="body2">
+              <Link
+                component={RouterLink}
+                to="/signup"
+                variant="body2"
+                color="primary"
+              >
                 Don't have an account? Sign Up
               </Link>
             </Grid>
