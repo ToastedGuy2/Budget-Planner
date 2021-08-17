@@ -7,7 +7,7 @@ import { Link as RouterLink } from "react-router-dom";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import PersonIcon from "@material-ui/icons/Person";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import CenterContainer from "../CenterContainer";
@@ -25,59 +25,38 @@ const defaultInput = {
     message: "",
   },
 };
-export default function SignUp({ login }) {
+export default function Login({ login }) {
   const [emailInput, setEmailInput] = useState(defaultInput);
   const [passwordInput, setPasswordInput] = useState(defaultInput);
-  const [repeatPasswordInput, setRepeatPasswordInput] = useState(defaultInput);
   const [alertError, setAlertError] = useState({ display: false, message: "" });
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
   useEffect(() => {
     if (loading) {
-      const authNewUser = async () => {
+      const authUSer = async () => {
         try {
-          await axios.get(`${userApiUrl}/${emailInput.value}`);
-          setEmailInput({
-            ...emailInput,
-            error: {
-              display: true,
-              message: "Email has already been taken",
-            },
-          });
-        } catch (error) {
-          const { status, data } = error.response;
-          if (error.response) {
-            if (status === 404) {
-              try {
-                const user = {
-                  email: emailInput.value,
-                  password: passwordInput.value,
-                  repeat_password: repeatPasswordInput.value,
-                };
-                await axios.post(userApiUrl, user);
-                await login(user);
-                setComplete(true);
-              } catch (error) {
-                if (error.response) {
-                  displayAlertError(error.response.data.message);
-                } else {
-                  displayAlertError(
-                    "Oops something went wrong. Please try again"
-                  );
-                }
-              }
-            }
-            if (status === 500) {
-              displayAlertError(data.message);
-            }
-          } else {
-            displayAlertError("Oops something went wrong. Please try again");
-          }
-        } finally {
+          const user = {
+            email: emailInput.value,
+            password: passwordInput.value,
+          };
+          await login(user);
           setLoading(false);
+          setComplete(true);
+        } catch (error) {
+          if (error.response) {
+            if (error.response.status === 401)
+              displayAlertError("Incorrect email or password");
+            else
+              displayAlertError(
+                "Oops something went wrong on ours servers while processing your request. Please try again"
+              );
+          } else
+            displayAlertError(
+              "Oops our app crash while processing your request....Please try again"
+            );
         }
       };
-      authNewUser();
+      authUSer();
     }
   }, [loading]);
   const displayAlertError = (message) => {
@@ -89,15 +68,12 @@ export default function SignUp({ login }) {
       const inputs = {
         email: emailInput.value,
         password: passwordInput.value,
-        repeat_password: repeatPasswordInput.value,
       };
       let rules = {
         email: "required|email",
         password: "required",
-        repeat_password: "required|same:password",
       };
       let validation = new Validator(inputs, rules, {
-        same: "Passwords do not match",
         required: "This field is required",
       });
       const clearInputErrors = () => {
@@ -107,7 +83,6 @@ export default function SignUp({ login }) {
         };
         setEmailInput({ value: emailInput.value, error });
         setPasswordInput({ value: passwordInput.value, error });
-        setRepeatPasswordInput({ value: repeatPasswordInput.value, error });
       };
       clearInputErrors();
       if (validation.passes()) {
@@ -131,15 +106,6 @@ export default function SignUp({ login }) {
             },
           });
         }
-        if (validation.errors.has("repeat_password")) {
-          setRepeatPasswordInput({
-            value: repeatPasswordInput.value,
-            error: {
-              display: true,
-              message: validation.errors.get("repeat_password"),
-            },
-          });
-        }
       }
     };
     applySyncValidation();
@@ -153,10 +119,10 @@ export default function SignUp({ login }) {
       <Container component="main" maxWidth="xs">
         <Box className={classes.box}>
           <Avatar className={classes.avatar}>
-            <PersonAddIcon fontSize="large" />
+            <PersonIcon fontSize="large" />
           </Avatar>
           <Typography component="h1" variant="h4">
-            Sign up
+            Login
           </Typography>
         </Box>
         <form noValidate onSubmit={onSubmitHandler}>
@@ -205,26 +171,6 @@ export default function SignUp({ login }) {
             error={passwordInput.error.display}
             helperText={passwordInput.error.message}
           />
-          <TextField
-            variant="outlined"
-            required
-            fullWidth
-            name="repeat_password"
-            label="Repeat password"
-            type="password"
-            id="repeat_password"
-            autoComplete="repeat_password"
-            margin="normal"
-            value={repeatPasswordInput.value}
-            onChange={(e) => {
-              setRepeatPasswordInput({
-                ...repeatPasswordInput,
-                value: e.target.value,
-              });
-            }}
-            error={repeatPasswordInput.error.display}
-            helperText={repeatPasswordInput.error.message}
-          />
 
           <div className={classes.wrapper}>
             <Button
@@ -235,7 +181,7 @@ export default function SignUp({ login }) {
               className={classes.submitBtn}
               disabled={loading}
             >
-              Sign up
+              Login
             </Button>
             {loading && (
               <CircularProgress
@@ -247,8 +193,8 @@ export default function SignUp({ login }) {
           </div>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link component={RouterLink} to="/login" variant="body2">
-                Already have an account? Login here
+              <Link component={RouterLink} to="/signup" variant="body2">
+                Don't have an account? Sign Up
               </Link>
             </Grid>
           </Grid>
