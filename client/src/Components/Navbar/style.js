@@ -4,6 +4,9 @@ const useStyles = makeStyles((theme) => ({
   brand: {
     fontWeight: "bold",
   },
+  icon: {
+    color: "#fff",
+  },
   appBar: {
     // background: "linear-gradient(to left, #373F51, #008DD5) !important",
   },
