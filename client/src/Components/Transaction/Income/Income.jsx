@@ -2,41 +2,32 @@ import React from "react";
 import useStyles from "./style";
 import Typography from "@material-ui/core/Typography";
 import Formatter from "../../../helper/currencyFormatter";
-import { Box, Link } from "@material-ui/core";
-export default function Income({ income }) {
+import { Link } from "@material-ui/core";
+import TransactionContainer from "../../TransactionContainer/TransactionContainer.jsx";
+export default function Income({ amount }) {
   const classes = useStyles();
-  const formattedIncome = Formatter.format(income);
+  const formattedIncome = Formatter.format(amount);
+  const message = amount
+    ? `You've earned ${formattedIncome} this month.`
+    : `You've earned nothing this month.`;
   return (
-    <Box
-      className={classes.box}
-      py={3}
-      px={2}
-      boxShadow={3}
-      borderRadius={8}
-      textAlign="center"
-      my={2}
+    <TransactionContainer
+      title="Income"
+      amount={formattedIncome}
+      message={message}
+      bgColor="#4caf50"
     >
-      <Typography variant="h4" color="initial">
-        Income
-      </Typography>
-      <Typography variant="h3" color="initial">
-        + {formattedIncome}
-      </Typography>
-      {income ? (
-        <Typography variant="body1" color="initial">
-          You've earned {formattedIncome} this month.{" "}
+      <Typography variant="body1">
+        {amount ? (
           <Link href="#" underline="always" className={classes.link}>
             Have you earned even more? Well add it here
           </Link>
-        </Typography>
-      ) : (
-        <Typography variant="body1" color="initial">
-          You've earned nothing this month.{" "}
+        ) : (
           <Link href="#" underline="always" className={classes.link}>
-            Am i wrong? Well add your income here
+            Add your income sources here
           </Link>
-        </Typography>
-      )}
-    </Box>
+        )}
+      </Typography>
+    </TransactionContainer>
   );
 }

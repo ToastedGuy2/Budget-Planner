@@ -35,7 +35,7 @@ export default function Navbar({ user }) {
         </Box>
         <Box>
           <IconButton className={classes.icon}>
-            <Brightness4Icon fontSize={"large"}></Brightness4Icon>
+            <Brightness4Icon fontSize="large"></Brightness4Icon>
           </IconButton>
           <IconButton className={classes.icon}>
             <BarChartIcon fontSize="large"></BarChartIcon>

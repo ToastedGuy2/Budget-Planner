@@ -11,11 +11,6 @@ const useStyles = makeStyles((theme) => ({
       color: "#EBEBEB",
     },
   },
-  // amount: {
-  //   display: "flex",
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  // },
 }));
 // const useStyles = makeStyles((theme) => ({
 //   box: {

@@ -1,7 +1,8 @@
 import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
-  container: {
-    backgroundColor: "#FCEFF9",
+  box: {
+    color: "#FFf",
+    height: "100%",
   },
 }));
 export default useStyles;
