@@ -4,5 +4,12 @@ const useStyles = makeStyles((theme) => ({
     color: "#FFf",
     height: "100%",
   },
+  link: {
+    color: "#fff",
+    fontWeight: "bold",
+    "&:hover": {
+      color: "#EBEBEB",
+    },
+  },
 }));
 export default useStyles;

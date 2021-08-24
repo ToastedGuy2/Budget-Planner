@@ -1,34 +1,33 @@
 import React from "react";
-import useStyles from "./style";
+import useStyles from "./DisplayContainer/style";
 import Typography from "@material-ui/core/Typography";
 import Formatter from "../../../helper/currencyFormatter";
-import TransactionContainer from "../../TransactionContainer/TransactionContainer.jsx";
 import { Link } from "@material-ui/core";
-export default function Expense({ amount }) {
+import DisplayContainer from "./DisplayContainer/DisplayContainer.jsx";
+export default function DisplayIncome({ amount }) {
   const classes = useStyles();
-  const formattedAmount = Formatter.format(amount);
-  //
+  const formattedIncome = Formatter.format(amount);
   const message = amount
-    ? `You've spent ${formattedAmount} this month.`
-    : `You haven't spent anything this month.`;
+    ? `You've earned ${formattedIncome} this month.`
+    : `You've earned nothing this month.`;
   return (
-    <TransactionContainer
-      title="Expenses"
-      amount={formattedAmount}
+    <DisplayContainer
+      title="Income"
+      amount={formattedIncome}
       message={message}
-      bgColor="#d32f2f"
+      bgColor="#4caf50"
     >
       <Typography variant="body1">
         {amount ? (
           <Link href="#" underline="always" className={classes.link}>
-            Have you spent even more? Add it here
+            Have you earned even more? Well add it here
           </Link>
         ) : (
           <Link href="#" underline="always" className={classes.link}>
-            Add your expenses here
+            Add your income sources here
           </Link>
         )}
       </Typography>
-    </TransactionContainer>
+    </DisplayContainer>
   );
 }

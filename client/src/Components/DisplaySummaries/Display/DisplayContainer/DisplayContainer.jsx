@@ -3,7 +3,7 @@ import React from "react";
 import useStyles from "./style";
 import Typography from "@material-ui/core/Typography";
 
-export default function TransactionContainer({
+export default function DisplayContainer({
   title,
   amount,
   message,

@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import { DateTime } from "luxon";
 import { DataGrid } from "@material-ui/data-grid";
 import Formatter from "../../helper/currencyFormatter";
-import parseCurrency from "parsecurrency";
 import { Box, Button } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
@@ -12,6 +11,21 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Tooltip from "@material-ui/core/Tooltip";
+import useStyles from "./style";
+
+export default function TransactionTable() {
+  const classes = useStyles();
+  return (
+    <Box className={classes.container}>
+      <Box className={classes.subContainer}>
+        <Box className={classes.subContainerItem}>
+          <DataGrid rows={rows} columns={columns} pageSize={5} />
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
 const columns = [
   { field: "nRow", headerName: "#", width: 100 },
   {
@@ -127,17 +141,3 @@ const rows = [
     DateTime.now().minus({ days: 1 })
   ),
 ];
-
-export default function TransactionTable() {
-  console.log(DateTime.now());
-  return (
-    <div style={{ height: "380px", marginTop: 16 }}>
-      <div style={{ display: "flex", height: "100%" }}>
-        <div style={{ flexGrow: 1 }}>
-          {" "}
-          <DataGrid rows={rows} columns={columns} pageSize={5} />
-        </div>
-      </div>
-    </div>
-  );
-}
