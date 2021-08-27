@@ -1,5 +1,5 @@
 const Validator = require("validatorjs");
-const { isEmailInUse } = require("../helpers/userHelper");
+const { isEmailInUse } = require("../../helpers/userHelper");
 exports.validateUser = (req, res, next) => {
   const user = req.body;
   Validator.registerAsync(

@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const { morphism } = require("morphism");
 const jwt = require("jsonwebtoken");
-const UserModel = require("../models/UserModels");
+const UserModel = require("../models/UserModel");
 const schema = require("../morphismSchemas/UserSchema");
 exports.login = async (req, res) => {
   try {
@@ -50,4 +50,32 @@ exports.login = async (req, res) => {
         "Something went wrong on our servers while processing your request. Please try again"
       );
   }
+};
+exports.authenticate = async (req, res) => {
+  const token = req.headers["authorization"];
+  jwt.verify(token, process.env.TOKEN_SECRET, (err, decode) => {
+    if (err)
+      return res.status(401).json({
+        status: "failed",
+        message: "Invalid Credentials",
+      });
+    UserModel.findOne({ email: decode.email })
+      .then((user) =>
+        res.json({
+          status: "success",
+          message: "authentication was successful",
+          data: {
+            user: morphism(schema, user),
+          },
+        })
+      )
+      .catch(() =>
+        res
+          .status(500)
+          .json(
+            "Something went wrong on our servers while processing your request. Please try again"
+          )
+      );
+    decode;
+  });
 };

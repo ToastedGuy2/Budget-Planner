@@ -4,7 +4,9 @@ const {
   getAllUsers,
   getUserByEmail,
 } = require("../controllers/userController");
-const { validateUser } = require("../middlewares/dataValidationMiddleware");
+const {
+  validateUser,
+} = require("../middlewares/ValidationMiddlewares/userValidationMiddlewares");
 const userRouter = express.Router();
 
 userRouter.route("/").get(getAllUsers).post(validateUser, postUser);

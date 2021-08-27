@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const { morphism } = require("morphism");
-const UserModel = require("../models/UserModels");
+const UserModel = require("../models/UserModel");
 const schema = require("../morphismSchemas/UserSchema");
 exports.postUser = async (req, res) => {
   try {
