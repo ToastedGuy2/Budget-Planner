@@ -22,6 +22,10 @@ export default function Navbar({ user }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const name = user.email
+    .replace(/@[^@]+$/, "")
+    .substring(0, 2)
+    .toUpperCase();
   const classes = useStyles();
   return (
     <AppBar className={classes.appBar} position="static">
@@ -42,9 +46,7 @@ export default function Navbar({ user }) {
           </IconButton>
           <IconButton>
             {/* <IconButton onClick={handleClick}> */}
-            <AvatarIcon className={classes.profile}>
-              {user.email.substring(0, 2).toUpperCase()}
-            </AvatarIcon>
+            <AvatarIcon className={classes.profile}>{name}</AvatarIcon>
           </IconButton>
         </Box>
         {/* <Menu

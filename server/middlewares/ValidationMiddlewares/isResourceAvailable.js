@@ -18,10 +18,12 @@ const isUserResourceAvailable = async (req, res, next) => {
 };
 const isCategoryResourceAvailable = async (req, res, next) => {
   try {
-    const id = req.params.id;
-    const result = await doesCategoryExists(id);
+    const { id, userId } = req.params;
+    const result = await doesCategoryExists(id, userId);
     if (result) return next();
-    return res.status(404).send("Category resource doesn't exist");
+    return res
+      .status(404)
+      .send("Category resource doesn't exist or It's not own by the user");
   } catch (error) {
     console.log(error);
     res.status(500).json({
