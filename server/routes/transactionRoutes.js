@@ -14,7 +14,7 @@ const {
 const {
   isCategoryResourceAvailable,
 } = require("../middlewares/ValidationMiddlewares/isResourceAvailable");
-const transactionRouter = express.Router();
+const transactionRouter = express.Router({ mergeParams: true });
 transactionRouter
   .route("/")
   .get(getAllTransactions)

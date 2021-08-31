@@ -12,6 +12,7 @@ const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
+const summaryRoutes = require("./routes/summaryRoutes");
 const app = express();
 app.use(cors());
 app.use(morgan("dev"));
@@ -33,4 +34,5 @@ app.use(
   isUserResourceAvailable,
   transactionRoutes
 );
+app.use("/api/users/:userId/summary/", authentication, summaryRoutes);
 module.exports = app;

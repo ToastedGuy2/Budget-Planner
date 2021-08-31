@@ -11,7 +11,7 @@ const {
 const {
   isCategoryResourceAvailable,
 } = require("../middlewares/ValidationMiddlewares/isResourceAvailable");
-const categoryRouter = express.Router();
+const categoryRouter = express.Router({ mergeParams: true });
 categoryRouter
   .route("/")
   .get(getAllCategoriesByUser)
