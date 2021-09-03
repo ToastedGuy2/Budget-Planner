@@ -7,7 +7,7 @@ const transactionSchema = Schema({
   amount: Number,
   date: Date,
   userId: Schema.Types.ObjectId,
-  addedOn: {
+  createdAt: {
     type: Date,
     default: new Date(),
   },

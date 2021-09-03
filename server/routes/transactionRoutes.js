@@ -18,7 +18,8 @@ const transactionRouter = express.Router({ mergeParams: true });
 transactionRouter
   .route("/")
   .get(getAllTransactions)
-  .post(validateTransaction, DataSanitation, postTransaction)
+  // .post(validateTransaction, DataSanitation, postTransaction)
+  .post(DataSanitation, postTransaction)
   .delete(deleteManyTransactions);
 
 transactionRouter

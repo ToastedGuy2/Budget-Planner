@@ -1,3 +1,7 @@
+const { morphism } = require("morphism");
+const Schema = require("../morphismSchemas/TransactionSchema");
+
+
 const Transaction = require("../models/TransactionModel");
 
 exports.postTransaction = async (req, res) => {
@@ -9,7 +13,7 @@ exports.postTransaction = async (req, res) => {
       status: "success",
       message: "Transaction added successfully",
       data: {
-        transaction: newTransaction,
+        transaction: morphism(Schema,newTransaction),
       },
     });
   } catch (error) {
@@ -40,7 +44,7 @@ exports.patchTransaction = async (req, res) => {
       status: "success",
       message: "Transaction updated successfully",
       data: {
-        transaction,
+        transaction: morphism(Schema,transaction),
       },
     });
   } catch (error) {
@@ -65,7 +69,7 @@ exports.getTransaction = async (req, res) => {
       status: "success",
       message: "transaction found",
       data: {
-        transaction,
+        transaction:morphism(Schema,transaction),
       },
     });
   } catch (error) {
@@ -84,7 +88,7 @@ exports.getAllTransactions = async (req, res) => {
       status: "successful",
       results: transactions.length,
       data: {
-        transactions,
+        transactions:morphism(Schema,transactions),
       },
     });
   } catch (error) {
