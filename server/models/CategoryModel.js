@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const categorySchema = mongoose.Schema({
   name: String,
-  userId: mongoose.Schema.Types.ObjectId,
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 const CategoryModel = mongoose.model("Category", categorySchema);

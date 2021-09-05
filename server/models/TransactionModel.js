@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 const transactionSchema = Schema({
   type: String,
   name: String,
-  categoryId: Schema.Types.ObjectId,
+  category: { type: Schema.Types.ObjectId, ref: "Category" },
   amount: Number,
   date: Date,
-  userId: Schema.Types.ObjectId,
+  user: { type: Schema.Types.ObjectId, ref: "User" },
   createdAt: {
     type: Date,
     default: new Date(),

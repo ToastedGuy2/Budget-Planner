@@ -28,38 +28,44 @@ module.exports.monthly = async (req, res) => {
   const transactionsDocs = await Transaction.find({
     date: { $gte: startDate, $lte: endDate },
     userId,
-  }).sort({ addedOn: "desc" });
-  const transactions = morphism(Schema,transactionsDocs);
-  const incomeList = transactions.filter(transaction => transaction.type === "Income");
-  const income = incomeList.reduce((acc,item) => acc + item.amount,0);
-  const expenseList = transactions.filter(transaction => transaction.type === "Expense");
-  const expense = expenseList.reduce((acc,item) => acc + item.amount,0);  
-  const budgetDoc = await Budget.findOne({month,year,userId});
-  const budget = budgetDoc? budgetDoc.amount:0;
+  })
+    .populate("category")
+    .sort({ addedOn: "desc" });
+  const transactions = morphism(Schema, transactionsDocs);
+  const incomeList = transactions.filter(
+    (transaction) => transaction.type === "Income"
+  );
+  const income = incomeList.reduce((acc, item) => acc + item.amount, 0);
+  const expenseList = transactions.filter(
+    (transaction) => transaction.type === "Expense"
+  );
+  const expense = expenseList.reduce((acc, item) => acc + item.amount, 0);
+  const budgetDoc = await Budget.findOne({ month, year, userId });
+  const budget = budgetDoc ? budgetDoc.amount : 0;
   const remaining = budget - expense;
 
   const summary = {
     from: startDate,
-    end:endDate,
-    transactions:{
+    end: endDate,
+    transactions: {
       results: transactions.length,
       data: transactions,
     },
     income: {
       results: incomeList.length,
       data: incomeList,
-      amount: income
+      amount: income,
     },
-    expenses:{
+    expenses: {
       results: expenseList.length,
       data: expenseList,
-      amount: expense 
+      amount: expense,
     },
-    budget:{
+    budget: {
       amount: budget,
-      remaining
-    }
-  }
+      remaining,
+    },
+  };
 
   res.json(summary);
 };
