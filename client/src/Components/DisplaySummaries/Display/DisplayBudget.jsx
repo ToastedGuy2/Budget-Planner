@@ -5,18 +5,18 @@ import useStyles from "./DisplayContainer/style";
 import { Link } from "@material-ui/core";
 import DisplayContainer from "./DisplayContainer/DisplayContainer.jsx";
 
-export default function DisplayBudget({ remainBudget, budget }) {
+export default function DisplayBudget({ remaining, amount }) {
   const classes = useStyles();
-  const message = getStatusMessage(budget, remainBudget);
+  const message = getStatusMessage(amount, remaining);
   return (
     <DisplayContainer
       title="Budget"
-      amount={Formatter.format(remainBudget)}
+      amount={Formatter.format(remaining)}
       message={message}
-      bgColor={getBgColor(budget, remainBudget)}
+      bgColor={getBgColor(amount, remaining)}
     >
       <Typography variant="body1">
-        {budget ? (
+        {amount ? (
           <>
             Click here to{" "}
             <Link href="#" underline="always" className={classes.link}>

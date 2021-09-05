@@ -30,6 +30,9 @@ export default function Login({ login }) {
   const [emailInput, setEmailInput] = useState(defaultInput);
   const [passwordInput, setPasswordInput] = useState(defaultInput);
   const [alertError, setAlertError] = useState({ display: false, message: "" });
+  const [infoAlert, setInfoAlert] = useState(
+    localStorage.getItem("show_redirect_alert") ? true : false
+  );
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
   useEffect(() => {
@@ -64,6 +67,9 @@ export default function Login({ login }) {
   const displayAlertError = (message) => {
     setAlertError({ display: true, message });
   };
+  useEffect(() => {
+    localStorage.removeItem("show_redirect_alert");
+  }, []);
   const onSubmitHandler = (e) => {
     e.preventDefault();
     const applySyncValidation = () => {
@@ -135,8 +141,21 @@ export default function Login({ login }) {
               onClose={() => {
                 setAlertError(false);
               }}
+              style={{ margin: "8px 0px" }}
             >
               {alertError.message}
+            </Alert>
+          </Collapse>
+          <Collapse in={infoAlert}>
+            <Alert
+              variant="filled"
+              severity="info"
+              onClose={() => {
+                setInfoAlert(false);
+              }}
+              style={{ margin: "8px 0px" }}
+            >
+              You must log in first to use our services
             </Alert>
           </Collapse>
           <TextField

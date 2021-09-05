@@ -1,5 +1,4 @@
 import React from "react";
-import { v4 as uuidv4 } from "uuid";
 import { DateTime } from "luxon";
 import { DataGrid } from "@material-ui/data-grid";
 import Formatter from "../../helper/currencyFormatter";
@@ -95,9 +94,8 @@ const columns = [
     ),
   },
 ];
-const createRowData = (nRow, type, name, amount, category, date) => ({
-  id: uuidv4(),
-  nRow,
+const createRowData = (id, type, name, amount, category, date) => ({
+  id,
   type,
   name,
   amount,

@@ -30,7 +30,13 @@ export default function App() {
       }
       return false;
     } catch (error) {
-      return false;
+      const { data, status, headers } = error.response;
+      if (error.response) {
+        if (status === 401) {
+          return false;
+        }
+      }
+      throw error;
     }
   };
 
