@@ -27,7 +27,7 @@ module.exports.monthly = async (req, res) => {
   );
   const transactionsDocs = await Transaction.find({
     date: { $gte: startDate, $lte: endDate },
-    userId,
+    user: userId,
   })
     .populate("category")
     .sort({ addedOn: "desc" });
