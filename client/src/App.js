@@ -7,6 +7,7 @@ import SignUp from "./Components/SignUp/SignUp.jsx";
 import Login from "./Components/Login/Login.jsx";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { config } from "dotenv";
+import "@fontsource/roboto";
 export default function App() {
   const [loggedInUser, setLoggedInUser] = useState(null);
   const login = async (credentials) => {

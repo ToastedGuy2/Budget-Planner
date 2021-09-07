@@ -14,7 +14,7 @@ export default function DisplayContainer({
   return (
     <Box
       className={classes.box}
-      py={3}
+      py={2}
       px={2}
       boxShadow={3}
       borderRadius={8}

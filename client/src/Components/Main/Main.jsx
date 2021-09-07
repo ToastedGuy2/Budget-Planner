@@ -4,12 +4,14 @@ import TransactionTable from "../TransactionTable/TransactionTable.jsx";
 import DisplaySummaries from "../DisplaySummaries/DisplaySummaries.jsx";
 import Container from "@material-ui/core/Container";
 import PacmanLoader from "react-spinners/PacmanLoader";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import CenterContainer from "../CenterContainer";
 import { DateTime } from "luxon";
 import axios from "axios";
 import useStyles from "./style.js";
 import DisplayError from "../DisplayError/DisplayError";
 import { Redirect } from "react-router-dom";
+import { Button } from "@material-ui/core";
 export default function Main({ user, isUserAuthenticated }) {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
@@ -71,7 +73,7 @@ export default function Main({ user, isUserAuthenticated }) {
             expenses={data.expenses}
             income={data.income}
           />
-          <TransactionTable transactions={data.transactions} />
+          <TransactionTable transactions={data.transactions.data} />
         </Container>
       </>
     );

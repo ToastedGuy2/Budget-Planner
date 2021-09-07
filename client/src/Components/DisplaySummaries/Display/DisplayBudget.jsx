@@ -11,7 +11,7 @@ export default function DisplayBudget({ remaining, amount }) {
   return (
     <DisplayContainer
       title="Budget"
-      amount={Formatter.format(remaining)}
+      amount={Formatter.format(amount === 0 ? 0 : remaining)}
       message={message}
       bgColor={getBgColor(amount, remaining)}
     >
